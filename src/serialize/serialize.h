@@ -34,6 +34,12 @@ int buf_read(buffer_type *buf, unsigned char *dest, size_t n);
 // otherwise it returns 0;
 int set_next(buffer_type *buf, unsigned int next);
 
+// buf_skip function allows to skip specified amount of bytes without
+// performing read/write operations (use negative values to rewind back).
+// returns 1 if the skip cannot be performed due to buffer size limitation,
+// otherwise it returns 0.
+int buf_skip(buffer_type *buf, int skip_size);
+
 // logger is a helper function for displaying error messages and exiting
 // the program.
 void logger(const char *tag, const char *message, bool _exit);

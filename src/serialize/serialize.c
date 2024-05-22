@@ -70,7 +70,24 @@ int buf_read(buffer_type *buf, unsigned char *dest, size_t n) {
 int set_next(buffer_type *buf, unsigned int next) {
     if (next > buf->size)
         return 1;
+
     buf->next = next;
+    return 0;
+}
+
+int buf_skip(buffer_type *buf, int skip_size) {
+    unsigned int new_next;
+
+    if (skip_size >= 0)
+        new_next = buf->next + (unsigned int)skip_size;
+    else
+        new_next = buf->next - (unsigned int)abs(skip_size);
+
+    if (new_next > buf->size)
+        return 1;
+
+    buf->next = new_next;
+
     return 0;
 }
 

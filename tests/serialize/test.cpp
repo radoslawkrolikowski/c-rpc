@@ -78,3 +78,48 @@ TEST(serialize_test_group, test_set_next) {
     LONGS_EQUAL(25, buf->next);
     delete_buffer(buf);
 }
+
+TEST(serialize_test_group, test_buf_read) {
+    buffer_type *buf = make_buffer();
+
+    unsigned char *b = (unsigned char*)malloc(sizeof(unsigned char) * 20);
+    if (b == NULL)
+        FAIL("allocate memory error");
+
+    strncpy((char*)b, "ABCDEFGHI", 10);
+    buf_write(buf, b, 9);
+    LONGS_EQUAL(9, buf->next);
+    STRNCMP_EQUAL((const char*)b, (const char*)buf->buf, 9);
+    set_next(buf, 0);
+    LONGS_EQUAL(0, buf->next);
+
+    unsigned char *dest = (unsigned char*)malloc(sizeof(unsigned char) * 20);
+    if (dest == NULL)
+        FAIL("allocate memory error");
+
+    int err = buf_read(buf, dest, 9);
+    LONGS_EQUAL(0, err);
+
+    STRNCMP_EQUAL((const char*)b, (const char*)dest, 9);
+    LONGS_EQUAL(9, buf->next);
+
+    delete_buffer(buf);
+    free(b);
+    free(dest);
+}
+
+TEST(serialize_test_group, test_buf_skip) {
+    buffer_type *buf = make_buffer();
+
+    LONGS_EQUAL(0, buf->next);
+    buf_skip(buf, 4);
+    LONGS_EQUAL(4, buf->next);
+    buf_skip(buf, 3);
+    LONGS_EQUAL(7, buf->next);
+    buf_skip(buf, -5);
+    LONGS_EQUAL(2, buf->next);
+    LONGS_EQUAL(1, buf_skip(buf, -10));
+    LONGS_EQUAL(2, buf->next);
+
+    delete_buffer(buf);
+}
